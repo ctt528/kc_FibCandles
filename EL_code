@@ -1,0 +1,56 @@
+{Holding level strategy creation block 1}
+
+//Just copied and pasted "kc_volatility"
+
+
+
+clearprintlog;
+Input:
+	ATRLength(14);
+
+Vars:
+	ATR(0),
+	ii(0),
+	greenday(true),
+	redday(0),
+	fibcandleuparraySUM(0),
+	fibcandleuparrayAVG(0),
+	greendayCount(0);
+	
+
+Arrays:
+	Fibcandleuparray[] (0),
+	greenornotarray[] (0);
+
+
+
+ATR = AvgTrueRange( ATRLength ) ;
+
+	
+	
+	
+For ii = 1 to 100 
+Begin
+	Array_setmaxindex(greenornotarray, ii);
+	Array_setmaxindex(fibcandleuparray, ii);
+	
+	If close[ii] > open[ii] then greenday = true else greenday = false; 
+	If greenday = true then greenornotarray[ii] = 1 else greenornotarray[ii] = 0;
+		
+	greendayCount = array_sum(greenornotarray, 0, ii); //How many green days	
+	
+	If greenday = true then Fibcandleuparray[ii] = 100*((high[ii] - close[ii])/range) else fibcandleuparray[ii] = 0; //Fib percent retrace on EVERY green bar.
+	print(Fibcandleuparray[ii], "   ", ii);
+	FibcandleuparraySUM = Array_sum(Fibcandleuparray, 0, ii);
+	fibcandleuparrayAVG = iff(greendayCount <> 0, (fibcandleuparraySUM / greendayCount), 1); //Shows average fib retracement on EVERY green day.
+	
+//print(fibcandleuparrayAVG, "  ", ii);
+	
+end;
+	
+plot1(range, !("range"));
+
+//print(fibcandleuparrayAVG, "  ", ii);
+	 
+		
+//Confidence Interval:
